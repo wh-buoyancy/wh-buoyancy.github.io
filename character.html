@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>character</title>
- <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/home.css">
@@ -25,7 +27,13 @@
     fetch("/bg.html")
       .then(res => res.text())
       .then(html => {
-        document.getElementById("bg").innerHTML = html;
+        const bg = document.getElementById("bg");
+        bg.style.opacity = "0";
+        bg.innerHTML = html;
+        requestAnimationFrame(() => {
+          bg.style.transition = "opacity 0.4s ease";
+          bg.style.opacity = "1";
+        });
       });
   </script>
 
@@ -82,7 +90,7 @@
       <div class="flip-card">
         <div class="flip-inner">
           <div class="flip-front">
-           <img class="thumb" src="https://picsum.photos/500/500">
+            <img class="thumb" src="https://picsum.photos/500/500">
           </div>
           <div class="flip-back">
             <p>@artist_02</p>
@@ -90,11 +98,11 @@
         </div>
       </div>
 
-       <!-- 3枚目 -->
+      <!-- 3枚目 -->
       <div class="flip-card">
         <div class="flip-inner">
           <div class="flip-front">
-             <img class="thumb" src="https://picsum.photos/300/600">
+            <img class="thumb" src="https://picsum.photos/300/600">
           </div>
           <div class="flip-back">
             <p>@artist_03
@@ -103,7 +111,7 @@
         </div>
       </div>
 
-       <!-- 4枚目 -->
+      <!-- 4枚目 -->
       <div class="flip-card">
         <div class="flip-inner">
           <div class="flip-front">
@@ -120,28 +128,28 @@
   </section>
 
   <script>
-  const cards = document.querySelectorAll('.flip-card');
+    const cards = document.querySelectorAll('.flip-card');
 
-  // カードクリックでトグル
-  cards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      card.classList.toggle('is-flipped');
-
-      // カードクリックが外に伝わらないようにする
-      e.stopPropagation();
-    });
-  });
-
-  // 画像（カード）外をクリックしたら全部戻す
-  document.addEventListener('click', () => {
+    // カードクリックでトグル
     cards.forEach(card => {
-      card.classList.remove('is-flipped');
+      card.addEventListener('click', (e) => {
+        card.classList.toggle('is-flipped');
+
+        // カードクリックが外に伝わらないようにする
+        e.stopPropagation();
+      });
     });
-  });
-</script>
+
+    // 画像（カード）外をクリックしたら全部戻す
+    document.addEventListener('click', () => {
+      cards.forEach(card => {
+        card.classList.remove('is-flipped');
+      });
+    });
+  </script>
 
   <div id="cursor-glow"></div>
-    <script src="js/bg.js"></script>
+  <script src="js/bg.js"></script>
 
 </body>
 

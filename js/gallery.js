@@ -20,12 +20,26 @@ let currentIndex = 0;
 // ■ Cloudinaryから画像一覧を取得
 // ================================
 async function fetchImages() {
+  // ネットワーク接続チェック
+  if (!navigator.onLine) {
+    return { error: "offline" };
+  }
+
   try {
     const res = await fetch(
       `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/gallery.json`
     );
-    if (!res.ok) throw new Error("取得失敗");
-    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: res.status === 404 ? "empty" : "server" };
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      return { error: "parse" };
+    }
 
     // localStorageの削除リストを取得
     let excluded = [];
@@ -39,14 +53,15 @@ async function fetchImages() {
       }
     } catch {}
 
-    // 削除済みを除外して返す
-    return data.resources
+    const images = data.resources
       .map(r => `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${r.public_id}`)
       .filter(url => !excluded.includes(url));
 
+    return { images };
+
   } catch (err) {
     console.error("画像一覧の取得に失敗:", err);
-    return [];
+    return { error: "network" };
   }
 }
 
@@ -55,18 +70,56 @@ function getThumbs() {
 }
 
 // ================================
+// ■ エラーメッセージ表示
+// ================================
+function showMessage(type) {
+  const messages = {
+    offline: "オフラインです。接続を確認してください。",
+    network: "読み込みに失敗しました。再読み込みしてください。",
+    server:  "サーバーエラーが発生しました。しばらくお待ちください。",
+    parse:   "データの読み込みに失敗しました。",
+    empty:   "画像がありません",
+  };
+
+  const colors = {
+    offline: "rgba(255,150,50,0.8)",
+    network: "rgba(255,80,80,0.8)",
+    server:  "rgba(255,80,80,0.8)",
+    parse:   "rgba(255,80,80,0.8)",
+    empty:   "rgba(255,255,255,0.4)",
+  };
+
+  gallery.innerHTML = `
+    <p style="
+      color: ${colors[type] || "rgba(255,255,255,0.4)"};
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 40px 0;
+      font-size: 14px;
+    ">${messages[type] || "エラーが発生しました"}</p>
+  `;
+}
+
+// ================================
 // ■ ギャラリーを描画
 // ================================
 async function renderGallery() {
-  const images = await fetchImages();
+  const result = await fetchImages();
   gallery.innerHTML = "";
 
-  if (images.length === 0) {
-    gallery.innerHTML = "<p style='color:rgba(255,255,255,0.5);text-align:center;grid-column:1/-1'>画像がありません</p>";
+  // エラー処理
+  if (result.error) {
+    showMessage(result.error);
     return;
   }
 
-  images.forEach((src) => {
+  // 0件
+  if (result.images.length === 0) {
+    showMessage("empty");
+    return;
+  }
+
+  result.images.forEach((src) => {
     const img = document.createElement("img");
     img.src = src;
     img.alt = "";

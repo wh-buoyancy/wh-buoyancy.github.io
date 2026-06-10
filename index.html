@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
- 
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal</title>
- 
+
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <!-- CSS -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/home.css">
@@ -20,17 +22,23 @@
 
 <body>
 
-    <div id="bg"></div>
+  <div id="bg"></div>
 
-    <script>
-        fetch("/bg.html")
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById("bg").innerHTML = html;
-            });
-    </script>
+  <script>
+    fetch("/bg.html")
+      .then(res => res.text())
+      .then(html => {
+        const bg = document.getElementById("bg");
+        bg.style.opacity = "0";
+        bg.innerHTML = html;
+        requestAnimationFrame(() => {
+          bg.style.transition = "opacity 0.4s ease";
+          bg.style.opacity = "1";
+        });
+      });
+  </script>
 
-    <!-- ナビバー -->
+  <!-- ナビバー -->
   <header class="topbar">
     <div class="topbar-left">
       <img src="logo.png" alt="logo" class="logo-img">
@@ -43,15 +51,15 @@
       <a href="links.html">Links</a>
     </nav>
   </header>
- 
+
   <!-- プロフィール -->
   <section class="profile">
     <div class="profile-header">
       <img src="https://picsum.photos/1200/300" alt="banner">
     </div>
- 
+
     <img class="avatar" src="https://picsum.photos/200" alt="avatar">
- 
+
     <div class="profile-body">
       <div class="profile-main">
         <div class="profile-top">
@@ -65,7 +73,7 @@
       </div>
     </div>
   </section>
- 
+
   <!-- Xポスト -->
   <section class="tweet-card">
     <blockquote class="twitter-tweet" data-theme="dark">
@@ -74,13 +82,13 @@
       <a href="https://x.com/Pokemon/status/2059651366306402401"></a>
     </blockquote>
   </section>
- 
- 
+
+
   <script async src="https://platform.twitter.com/widgets.js"></script>
 
 
-    <div id="cursor-glow"></div>
-    <script src="js/bg.js"></script>
+  <div id="cursor-glow"></div>
+  <script src="js/bg.js"></script>
 </body>
 
 </html>
