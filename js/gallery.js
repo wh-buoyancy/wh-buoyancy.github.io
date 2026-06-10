@@ -1,25 +1,8 @@
 // ================================
 // ■ 定数
 // ================================
-const STORAGE_KEY = "galleryImages";
-
-const DEFAULT_IMAGES = [
-  "https://picsum.photos/1200?1",
-  "https://picsum.photos/1200?2",
-  "https://picsum.photos/1200?3",
-  "https://picsum.photos/1200?4",
-  "https://picsum.photos/1200?5",
-  "https://picsum.photos/1200?6",
-  "https://picsum.photos/1200?7",
-  "https://picsum.photos/1200?8",
-  "https://picsum.photos/1200?9",
-  "https://picsum.photos/1200?10",
-  "https://picsum.photos/1200?11",
-  "https://picsum.photos/1200?12",
-  "https://picsum.photos/1200?13",
-];
-
-//localStorage.removeItem("galleryImages")
+const STORAGE_KEY      = "galleryImages";
+const CLOUDINARY_CLOUD = "dmihzva14";
 
 // ================================
 // ■ 要素取得
@@ -34,11 +17,37 @@ const modalNext  = document.getElementById("modalNext");
 let currentIndex = 0;
 
 // ================================
-// ■ 画像リスト取得
+// ■ Cloudinaryから画像一覧を取得
 // ================================
-function getImages() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? JSON.parse(saved) : [...DEFAULT_IMAGES];
+async function fetchImages() {
+  try {
+    const res = await fetch(
+      `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/gallery.json`
+    );
+    if (!res.ok) throw new Error("取得失敗");
+    const data = await res.json();
+
+    // localStorageの削除リストを取得
+    let excluded = [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const list = JSON.parse(saved);
+        excluded = list
+          .filter(s => s.startsWith("__deleted__"))
+          .map(s => s.replace("__deleted__", ""));
+      }
+    } catch {}
+
+    // 削除済みを除外して返す
+    return data.resources
+      .map(r => `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${r.public_id}`)
+      .filter(url => !excluded.includes(url));
+
+  } catch (err) {
+    console.error("画像一覧の取得に失敗:", err);
+    return [];
+  }
 }
 
 function getThumbs() {
@@ -48,19 +57,24 @@ function getThumbs() {
 // ================================
 // ■ ギャラリーを描画
 // ================================
-function renderGallery() {
-  const images = getImages();
+async function renderGallery() {
+  const images = await fetchImages();
   gallery.innerHTML = "";
+
+  if (images.length === 0) {
+    gallery.innerHTML = "<p style='color:rgba(255,255,255,0.5);text-align:center;grid-column:1/-1'>画像がありません</p>";
+    return;
+  }
 
   images.forEach((src) => {
     const img = document.createElement("img");
     img.src = src;
     img.alt = "";
     img.className = "thumb";
+    img.onerror = () => { img.style.display = "none"; };
     gallery.appendChild(img);
   });
 
-  // フェードイン監視を再セット
   setupObserver();
 }
 

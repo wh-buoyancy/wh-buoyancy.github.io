@@ -22,7 +22,7 @@
   transition: transform 0.2s;
 }
 
-* フェードイン初期状態（ギャラリー内のみ） */
+/* フェードイン初期状態（ギャラリー内のみ） */
 .gallery .thumb {
   opacity: 0;
   transform: translateY(16px);
