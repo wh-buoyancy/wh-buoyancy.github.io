@@ -1,0 +1,196 @@
+/* =========================================================
+   home.css  ―  ホームページ専用スタイル
+========================================================= */
+
+/* =========================================================
+   ■ プロフィールカード全体
+========================================================= */
+.profile {
+  /* ファンタジーガラス背景 */
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border: var(--border-gold);
+  border-radius: 18px;
+  overflow: visible;        /* ← avatarがはみ出せるようにvisibleに */
+  margin: 16px;
+  box-shadow: var(--shadow-gold), var(--shadow);
+  position: relative;
+}
+
+/* =========================================================
+   ■ ヘッダー画像（バナー）
+========================================================= */
+.profile-header {
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;         /* ← 画像の角丸をここで制御 */
+  position: relative;
+}
+
+.profile-header img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;           /* ← 下の隙間をなくす */
+  filter: brightness(0.85) saturate(0.9);
+}
+
+/* バナー下部に金のグラデーション */
+.profile-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 180px;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(8, 16, 45, 0.65) 100%
+  );
+  pointer-events: none;
+  border-radius: 16px 16px 0 0;
+}
+
+/* =========================================================
+   ■ アバター
+========================================================= */
+.avatar {
+  position: absolute;
+  left: 24px;
+  top: 130px;               /* バナー高さ(180) - アバター半分(45) - 少し下げる */
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 18px rgba(212, 168, 75, 0.55);
+  object-fit: cover;
+  z-index: 2;
+}
+
+/* =========================================================
+   ■ プロフィール本文
+========================================================= */
+.profile-body {
+  padding: 52px 20px 24px 24px; /* 上: アバターの高さ分あける */
+}
+
+.profile-main {
+  width: 100%;
+}
+
+.profile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* 名前 */
+.name {
+  margin: 0;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ID */
+.id {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--sky-light);
+  letter-spacing: 0.5px;
+}
+
+/* バッジ */
+.badge {
+  background: var(--gold-dim);
+  border: var(--border-gold);
+  color: var(--gold);
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 8px rgba(212, 168, 75, 0.4);
+}
+
+/* 自己紹介 */
+.bio {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-sub);
+}
+
+/* =========================================================
+   ■ ツイートカード
+========================================================= */
+.tweet-card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: var(--border-subtle);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+
+  padding: 0;
+  overflow: hidden;
+
+  width: 100%;
+  max-width: 550px;
+  margin: 12px auto 24px; /* 上: profileとの間隔, 下: ページ末端 */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* blockquote の余白リセット */
+.tweet-card blockquote.twitter-tweet {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* =========================================================
+   ■ スマホ対応
+========================================================= */
+@media (max-width: 768px) {
+
+  .profile {
+    margin: 10px;
+    box-shadow: none;
+  }
+  .profile-header img {
+    height: 140px; 
+  }
+
+  .avatar {
+    left: 16px;
+    top: 120px;
+    width: 76px;
+    height: 76px;
+  }
+
+  .profile-body {
+    padding: 44px 14px 18px 16px;
+  }
+
+  .name {
+    font-size: 17px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  .tweet-card {
+    width: calc(100% - 20px);
+    margin: 10px auto 20px;
+  }
+}

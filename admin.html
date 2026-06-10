@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理者ページ</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/bg.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+  <div id="bg"></div>
+  <script>
+    fetch("/bg.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("bg").innerHTML = html;
+      });
+  </script>
+
+  <!-- ヘッダー -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="logo.png" alt="logo" class="logo-img">
+      <span class="logo">管理者ページ</span>
+    </div>
+    <nav class="topbar-right">
+      <button id="logout-btn">ログアウト</button>
+    </nav>
+  </header>
+
+  <!-- メイン -->
+  <main class="admin-container">
+
+    <!-- アップロードエリア -->
+    <div class="admin-upload-area">
+      <input type="file" id="upload-input" accept="image/*" multiple style="display:none;">
+      <button id="upload-btn" class="admin-upload-btn">+ 画像を追加</button>
+      <span id="upload-status"></span>
+    </div>
+
+    <h2 class="admin-title">画像一覧</h2>
+    <p class="admin-count">現在 <span id="img-count">0</span> 枚</p>
+
+    <!-- 画像グリッド -->
+    <div class="admin-grid" id="admin-grid"></div>
+
+  </main>
+
+  <!-- 削除確認ダイアログ -->
+  <div id="delete-dialog">
+    <div id="delete-dialog-box">
+      <p>この画像を削除しますか？</p>
+      <img id="delete-preview" src="" alt="削除対象">
+      <div id="delete-buttons">
+        <button id="delete-cancel">キャンセル</button>
+        <button id="delete-confirm">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cursor-glow"></div>
+  <script src="js/bg.js"></script>
+  <script src="js/admin.js"></script>
+
+</body>
+</html>

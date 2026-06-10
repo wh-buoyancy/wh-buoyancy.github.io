@@ -1,0 +1,221 @@
+/* ===== ギャラリーグリッド ===== */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* PC: 4列固定 */
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* スマホ: 2列固定 */
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== サムネイル ===== */
+.thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+* フェードイン初期状態（ギャラリー内のみ） */
+.gallery .thumb {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+/* フェードイン発動クラス（JSで付与） */
+.thumb.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.thumb:hover {
+  transform: scale(1.03);
+}
+
+/* ===== モーダル背景 ===== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ===== モーダル内の拡大画像 ===== */
+.modal-content {
+  max-width: 85vw;
+  max-height: 90vh;
+  object-fit: contain;
+  animation: pop 0.2s ease;
+  /* ナビボタンの分だけ横に余白 */
+  margin: 0 60px;
+}
+
+@keyframes pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ===== 閉じるボタン ===== */
+.close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 36px;
+  color: white;
+  cursor: pointer;
+  z-index: 10000;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ===== 前後ナビボタン共通 ===== */
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 48px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  user-select: none;
+  z-index: 10000;
+  line-height: 1;
+}
+
+.modal-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-prev { left: 16px; }
+.modal-next { right: 16px; }
+
+
+/* スマホでナビボタンを小さく */
+@media (max-width: 768px) {
+  .modal-nav {
+    font-size: 32px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modal-content {
+    max-width: 92vw;
+    margin: 0 48px;
+  }
+
+
+}
+
+
+
+/* ================================
+■ 隠し管理者トリガー（右下の透明エリア）
+================================ */
+#admin-trigger {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  z-index: 9998;
+  /* 完全透明・見えない */
+  background: transparent;
+  cursor: default;
+}
+ 
+/* ================================
+■ パスワードダイアログ背景
+================================ */
+#admin-dialog {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+ 
+/* ダイアログボックス */
+#admin-dialog-box {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 24px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+ 
+#admin-dialog-box p {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+}
+ 
+#admin-password-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+}
+ 
+#admin-password-input:focus {
+  border-color: #888;
+}
+ 
+#admin-dialog-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+ 
+#admin-cancel,
+#admin-submit {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+ 
+#admin-cancel {
+  background: #f0f0f0;
+  color: #555;
+}
+ 
+#admin-submit {
+  background: #333;
+  color: white;
+}
+ 
+#admin-error {
+  color: #e05;
+  font-size: 13px;
+  min-height: 16px;
+  margin: 0;
+}
+

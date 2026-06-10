@@ -1,0 +1,193 @@
+/* ================================
+■ 管理者ページ全体
+================================ */
+.admin-container {
+  max-width: 1000px;
+  margin: 80px auto 40px;
+  padding: 0 20px;
+}
+
+.admin-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.admin-count {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 20px;
+}
+
+/* ================================
+■ 画像グリッド
+================================ */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ================================
+■ 画像カード
+================================ */
+.admin-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.admin-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+/* ================================
+■ 削除ボタン
+================================ */
+.admin-delete-btn {
+  width: 100%;
+  padding: 8px;
+  background: rgba(220, 50, 50, 0.85);
+  color: white;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-delete-btn:hover {
+  background: rgb(200, 30, 30);
+}
+
+/* ================================
+■ ログアウトボタン（topbar内）
+================================ */
+#logout-btn {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+#logout-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ================================
+■ 削除確認ダイアログ
+================================ */
+#delete-dialog {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+#delete-dialog-box {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+#delete-dialog-box p {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+  font-weight: bold;
+}
+
+#delete-preview {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+#delete-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+#delete-cancel,
+#delete-confirm {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#delete-cancel {
+  background: #f0f0f0;
+  color: #555;
+}
+
+#delete-confirm {
+  background: #dc3232;
+  color: white;
+}
+
+#delete-confirm:hover {
+  background: #b92020;
+}
+
+/* ================================
+■ アップロードエリア
+================================ */
+.admin-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.admin-upload-btn {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-upload-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.admin-upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#upload-status {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}

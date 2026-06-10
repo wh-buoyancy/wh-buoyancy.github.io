@@ -1,0 +1,127 @@
+
+/* ================================
+■ Aboutプロフィール
+================================ */
+.about-profile {
+  text-align: center;
+  padding: 20px;
+}
+
+.about-icon {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.about-text h2 {
+  margin-top: 10px;
+}
+
+
+/* ================================
+■ ファンアート全体
+================================ */
+.fanart-section {
+  padding: 20px;
+}
+
+.fan-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* PC 4列 */
+  gap: 15px;
+}
+
+/* スマホ2列 */
+@media (max-width: 768px) {
+  .fan-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ================================
+■ フリップカード
+================================ */
+.flip-card {
+  perspective: 1000px;
+}
+
+/* ★ここが超重要（1回だけ定義） */
+.flip-inner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+ 
+}
+
+
+/* ================================
+■ 回転のトリガー（PCホバー ＆ スマホクリック共通）
+================================ */
+
+/* ① PCでのホバー時に回転 */
+@media (hover: hover) {
+  .flip-card:hover .flip-inner {
+    transform: rotateY(180deg);
+  }
+}
+
+/* ② スマホ等でタップ（クラスがついた時）に回転 */
+.flip-card.is-flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+
+/* ================================
+■ 表裏
+================================ */
+.flip-front,
+.flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* 画像 */
+.flip-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 裏 */
+.flip-back {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+/* ================================
+■ 画像
+================================ */
+.flip-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ================================
+■ 裏面
+================================ */
+.flip-back {
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotateY(180deg);
+  font-weight: bold;
+}

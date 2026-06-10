@@ -1,0 +1,79 @@
+@media (max-width: 768px) {
+
+  .profile {
+    margin: 8px;
+
+  }
+
+  .card {
+    width: 100%;
+    max-width: none;
+    margin: 10px 0;
+    padding: 12px;
+    align-items: flex-start; /* ←これ重要 */
+  }
+
+  .site-header {
+    padding: 12px 8px;
+  }
+
+  .site-header h1 {
+    font-size: 18px;
+  }
+
+  .site-header p {
+    font-size: 12px;
+  }
+  .profile-header img {
+    height: 120px;  /* スマホはヘッダー画像を少し小さく */
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    top: 120px;      /* header画像の高さに合わせて調整 */
+    left: 12px;
+  }
+
+  .profile-header {
+    max-height: 100px;
+     max-height: 120px;  /* ← 100px → 120px に少し増やす */
+  }
+
+  .profile-body {
+    padding: 44px 12px 20px 12px;
+    flex-direction: column;  /* スマホは縦並び */
+    text-align: left;
+  }
+
+  .profile-top {
+    flex-direction: row;
+    justify-content: space-between; /* 名前は左、Nextは右 */
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .badge {
+    align-self: flex-start;   /* 右寄せはspace-betweenで実現 */
+    margin-left: auto;  /* 右端に押し込む */
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;           /* アイコンが縮まないように */
+    margin-top: -35px;
+  }
+
+  .name {
+    font-size: 18px;
+  }
+
+  .id {
+    font-size: 12px;
+  }
+
+  .gallery {
+    gap: 6px;
+  }
+}

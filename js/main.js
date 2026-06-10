@@ -1,0 +1,1 @@
+console.log("Kemono Portal loaded");

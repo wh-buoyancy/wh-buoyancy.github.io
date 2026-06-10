@@ -1,0 +1,351 @@
+/* =========================
+   ■ RESET / BASE
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  /* 日本語はNoto Serif JP、英字はCinzelが自動で適用される */
+  font-family: 'Noto Serif JP', 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+  color: var(--text-main);
+
+  min-height: 100vh;
+  background: transparent;
+  overflow-x: hidden;
+  position: relative;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================
+   ■ CSS変数（テーマカラー一括管理）
+   色を変えたいときはここだけ変えればOK
+========================================================= */
+:root {
+  /* カラー */
+  --gold: #d4a84b;
+  --gold-light: #f0c96a;
+  --gold-dim: rgba(212, 168, 75, 0.20);
+  --sky: #5aaee8;
+  --sky-light: #a8d4f0;
+
+  /* 背景・カード */
+  --card: rgba(10, 20, 60, 0.55);
+  --card-hover: rgba(10, 20, 60, 0.72);
+  --nav-bg: rgba(8, 16, 45, 0.78);
+
+  /* ボーダー */
+  --border-gold: 2px solid rgba(212, 168, 75, 0.55);
+  --border-subtle: 2px solid rgba(212, 168, 75, 0.28);
+  --border-sky: 2px solid rgba(90, 174, 232, 0.45);
+
+  /* テキスト */
+  --text-main: #f0e8d0;
+  --text-sub: #a8b8d0;
+
+  /* シャドウ */
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --shadow-gold: 0 4px 24px rgba(212, 168, 75, 0.18);
+
+  /* 形状 */
+  --radius: 16px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+}
+
+/* =========================================================
+   ■ TOPBAR（全ページ共通ナビ）
+========================================================= */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 24px;
+
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  /* 金のボーダーライン */
+  border-bottom: var(--border-gold);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* 左：ロゴエリア */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  /* 金色のグロー */
+  filter: drop-shadow(0 0 6px rgba(212, 168, 75, 0.5));
+}
+
+.logo {
+  font-family: 'Cinzel', serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: var(--gold);
+  text-decoration: none;
+  text-shadow: 0 0 14px rgba(212, 168, 75, 0.45);
+}
+
+/* 右：ナビリンク */
+.topbar-right {
+  display: flex;
+  gap: 4px;
+}
+
+.topbar-right a {
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  color: var(--sky-light);
+
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+
+  transition: all 0.25s ease;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  box-sizing: border-box;
+}
+
+/* ホバー */
+.topbar-right a:hover {
+  background: rgba(0, 255, 242, 0.5);
+}
+
+/* アクティブ */
+.topbar-right a.active {
+  background: hsla(50, 100%, 50%, 0.5);
+}
+
+/* =========================================================
+   ■ 汎用カード
+========================================================= */
+.card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  margin: 12px;
+  padding: 20px;
+  border-radius: var(--radius);
+  border: var(--border-subtle);
+  box-shadow: var(--shadow);
+  color: var(--text-main);
+}
+
+.card h2,
+.card h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  margin-top: 0;
+}
+
+.card p {
+  color: var(--text-sub);
+  line-height: 1.75;
+}
+
+/* =========================================================
+   ■ コンテナ
+========================================================= */
+.container {
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* =========================================================
+   ■ ボタン共通
+========================================================= */
+
+/* リセット */
+button {
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Cinzel', serif;
+}
+
+/* メインボタン（金） */
+button,
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gold-dim);
+  border: var(--border-gold) !important;
+  color: var(--gold);
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+button:hover,
+.btn-gold:hover {
+  background: rgba(212, 168, 75, 0.32);
+  box-shadow: 0 0 18px rgba(212, 168, 75, 0.35);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+/* サブボタン（空色） */
+.btn-sky {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(90, 174, 232, 0.18);
+  border: var(--border-sky);
+  color: var(--sky-light);
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.btn-sky:hover {
+  background: rgba(90, 174, 232, 0.32);
+  box-shadow: 0 0 16px rgba(90, 174, 232, 0.25);
+  color: #d0eaff;
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   ■ セクション区切り（金の装飾ライン）
+========================================================= */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right,
+      transparent,
+      rgba(212, 168, 75, 0.5),
+      transparent);
+}
+
+/* =========================================================
+   ■ ページタイトル
+========================================================= */
+.page-title {
+  text-align: center;
+  padding: 32px 16px 16px;
+}
+
+.page-title h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 4vw, 36px);
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(212, 168, 75, 0.4);
+  margin: 0 0 6px;
+}
+
+.page-title p {
+  font-size: 13px;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* =========================================================
+   ■ スクロールバー
+========================================================= */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 20, 60, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 168, 75, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 168, 75, 0.7);
+}
+
+/* =========================================================
+   ■ レスポンシブ（スマホ）
+========================================================= */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 16px;
+  }
+
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-right a {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    padding: 7px 0;
+  }
+
+  .card {
+    margin: 10px;
+    padding: 14px;
+  }
+}
