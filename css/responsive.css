@@ -10,12 +10,19 @@
   /* ナビバー最適化は base.css に記述 */
   /* プロフィール最適化は home.css に記述 */
   /* ギャラリー最適化は gallery.css に記述 */
+  
+  body {
+    min-height: 100vh;
+    min-height: 100dvh; /* iOS Safari 対策 */
+  }
 }
 
 /* スマホ専用 */
 @media (max-width: 480px) {
   body {
     font-size: 14px;
+    min-height: 100vh;
+    min-height: 100dvh; /* iOS Safari 対策 */
   }
 }
 

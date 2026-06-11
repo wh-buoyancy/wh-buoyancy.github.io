@@ -24,6 +24,7 @@ body {
   color: var(--text-main);
 
   min-height: 100vh;
+  min-height: 100dvh; /* iOS Safari 対策 */
   background: transparent;
   overflow-x: hidden;
   position: relative;

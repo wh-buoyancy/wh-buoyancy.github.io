@@ -25,8 +25,12 @@
   <div id="bg"></div>
 
   <script>
-    fetch("/bg.html")
-      .then(res => res.text())
+    // bg.html 読み込み（エラーハンドリング追加）
+    fetch("./bg.html")
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to load bg.html: ${res.status}`);
+        return res.text();
+      })
       .then(html => {
         const bg = document.getElementById("bg");
         bg.style.opacity = "0";
@@ -35,6 +39,13 @@
           bg.style.transition = "opacity 0.4s ease";
           bg.style.opacity = "1";
         });
+      })
+      .catch(err => {
+        console.warn("Background load failed:", err);
+        // フォールバック：背景グラデーションのみ表示
+        const bg = document.getElementById("bg");
+        bg.style.background = "radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0f0f1a 100%)";
+        bg.style.opacity = "1";
       });
   </script>
 
