@@ -15,6 +15,22 @@
     min-height: 100vh;
     min-height: 100dvh; /* iOS Safari 対策 */
   }
+  
+  /* 重いアニメーションを削除（CPU課負低下） */
+  .deep-space,
+  .grain,
+  .haze,
+  .light-sweep,
+  .camera-shake,
+  .bokeh {
+    animation: none !important;
+  }
+  
+  /* 注釈：モバイルでも軽いアニメーションは動かす */
+  /* .star - 星のチラつき */
+  /* .shooting-star - 流れ星 */
+  /* .energy-ring - エネルギーリング */
+  /* を保持 */
 }
 
 /* スマホ専用 */
@@ -23,6 +39,20 @@
     font-size: 14px;
     min-height: 100vh;
     min-height: 100dvh; /* iOS Safari 対策 */
+  }
+  
+  /* 重いアニメーション削除 */
+  .deep-space,
+  .grain,
+  .haze,
+  .light-sweep,
+  .camera-shake,
+  .bokeh,
+  .wave-field,
+  .focus-lines,
+  .stream-line,
+  .global-glow {
+    animation: none !important;
   }
 }
 
