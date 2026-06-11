@@ -321,22 +321,7 @@
   mix-blend-mode: screen;
 }
 
-/* スモークレイヤー（雲と星の中間） */
-.smoke {
-  position: absolute;
-  inset: -10%;
-  background: radial-gradient(circle at 30% 60%, rgba(200,220,255,0.05), transparent 55%),
-              radial-gradient(circle at 70% 40%, rgba(255,240,200,0.04), transparent 60%);
-  filter: blur(60px);
-  animation: smokeMove 30s infinite alternate ease-in-out;
-  pointer-events: none;
-  z-index: 2;
-}
 
-@keyframes smokeMove {
-  0% { transform: translate(-2%, 1%) scale(1); }
-  100% { transform: translate(2%, -1%) scale(1.08); }
-}
 
   @keyframes ringPulse {
     0%   { transform:scale(0.3); opacity:0.8; }
@@ -344,10 +329,10 @@
   }
 
   /* レスポンシブ */
-  @media (max-width:1024px) {
+  @media (max-width: 768px) {
     .star { transform-origin:center; }
   }
-  @media (max-width:600px) {
+  @media (max-width: 480px) {
     .star  { transform:scale(0.8); }
     .shooting-star { width:80px; }
   }
