@@ -1,27 +1,24 @@
 // ================================
 // ■ 管理者隠し入口
-// 右下を2秒長押し → パスワード入力 → admin.htmlへ
+// 右下を3秒長押し → パスワード入力 → admin.htmlへ
 // ================================
 
-const ADMIN_PASSWORD = "Vwf7szU12001"; // ← パスワード変更はここだけ
-const ADMIN_PAGE     = "admin.html";
+const ADMIN_PAGE = "admin.html";
 
-const trigger   = document.getElementById("admin-trigger");
-const dialog    = document.getElementById("admin-dialog");
-const input     = document.getElementById("admin-password-input");
-const submitBtn = document.getElementById("admin-submit");
-const cancelBtn = document.getElementById("admin-cancel");
-const errorMsg  = document.getElementById("admin-error");
+const trigger    = document.getElementById("admin-trigger");
+const dialog     = document.getElementById("admin-dialog");
+const input      = document.getElementById("admin-password-input");
+const submitBtn  = document.getElementById("admin-submit");
+const cancelBtn  = document.getElementById("admin-cancel");
+const errorMsg   = document.getElementById("admin-error");
 
 let holdTimer = null;
 
 // ================================
-// ■ 長押し検知（PC・スマホ共通）
+// ■ 長押し検知
 // ================================
 function startHold() {
-  holdTimer = setTimeout(() => {
-    openDialog();
-  }, 3000); // 3秒長押し
+  holdTimer = setTimeout(() => openDialog(), 3000);
 }
 
 function cancelHold() {
@@ -35,7 +32,7 @@ trigger.addEventListener("mouseleave", cancelHold);
 trigger.addEventListener("touchend",   cancelHold);
 
 // ================================
-// ■ ダイアログを開く
+// ■ ダイアログ開閉
 // ================================
 function openDialog() {
   input.value = "";
@@ -44,26 +41,41 @@ function openDialog() {
   setTimeout(() => input.focus(), 100);
 }
 
-// ================================
-// ■ ダイアログを閉じる
-// ================================
 function closeDialog() {
   dialog.style.display = "none";
 }
 
 // ================================
-// ■ パスワード照合
+// ■ パスワード照合（Netlify Function経由）
 // ================================
-function checkPassword() {
-  if (input.value === ADMIN_PASSWORD) {
-    // sessionStorageに認証情報を保存してからページ移動
-    sessionStorage.setItem("adminAuth", ADMIN_PASSWORD);
-    window.location.href = ADMIN_PAGE;
-  } else {
-    errorMsg.textContent = "パスワードが違います";
-    input.value = "";
-    input.focus();
+async function checkPassword() {
+  const password = input.value;
+  submitBtn.disabled = true;
+  errorMsg.textContent = "";
+
+  try {
+    const res = await fetch("/.netlify/functions/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // パスワードをsessionStorageに保存（削除APIで使う）
+      sessionStorage.setItem("adminAuth", password);
+      window.location.href = ADMIN_PAGE;
+    } else {
+      errorMsg.textContent = data.message || "パスワードが違います";
+      input.value = "";
+      input.focus();
+    }
+  } catch {
+    errorMsg.textContent = "通信エラーが発生しました";
   }
+
+  submitBtn.disabled = false;
 }
 
 submitBtn.addEventListener("click", checkPassword);

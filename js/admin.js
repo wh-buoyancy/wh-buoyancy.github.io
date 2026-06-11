@@ -1,10 +1,6 @@
 // ================================
 // ■ 管理者ページ
-// 画像一覧・追加・削除・ログアウト
 // ================================
-
-const ADMIN_PASSWORD = "Vwf7szU12001";
-const STORAGE_KEY    = "galleryImages";
 
 const CLOUDINARY_CLOUD_NAME    = "dmihzva14";
 const CLOUDINARY_UPLOAD_PRESET = "my_gallery";
@@ -12,7 +8,7 @@ const CLOUDINARY_UPLOAD_PRESET = "my_gallery";
 // ================================
 // ■ 認証チェック
 // ================================
-if (sessionStorage.getItem("adminAuth") !== ADMIN_PASSWORD) {
+if (!sessionStorage.getItem("adminAuth")) {
   window.location.href = "gallery.html";
 }
 
@@ -34,27 +30,17 @@ let allImages = [];
 let deleteTargetIndex = null;
 
 // ================================
-// ■ Cloudinaryから画像一覧を取得
+// ■ 画像一覧をNetlify Function経由で取得
 // ================================
 async function fetchImages() {
   try {
-    const res = await fetch(
-      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/gallery.json`
-    );
+    const res = await fetch("/.netlify/functions/get-images");
     if (!res.ok) throw new Error("取得失敗");
     const data = await res.json();
-    return data.resources.map(r =>
-      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${r.public_id}`
-    );
+    return data.images || [];
   } catch (err) {
     console.error("画像一覧の取得に失敗:", err);
-    // 取得失敗時はlocalStorageから読む
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    return [];
   }
 }
 
@@ -62,24 +48,29 @@ async function fetchImages() {
 // ■ グリッド描画
 // ================================
 async function renderGrid() {
-  grid.innerHTML = "<p style='color:white'>読み込み中...</p>";
+  grid.innerHTML = "<p style='color:white;grid-column:1/-1;text-align:center'>読み込み中...</p>";
   allImages = await fetchImages();
   imgCount.textContent = allImages.length;
   grid.innerHTML = "";
 
-  allImages.forEach((src, index) => {
+  if (allImages.length === 0) {
+    grid.innerHTML = "<p style='color:rgba(255,255,255,0.5);grid-column:1/-1;text-align:center'>画像がありません</p>";
+    return;
+  }
+
+  allImages.forEach((item, index) => {
     const card = document.createElement("div");
     card.className = "admin-card";
 
     const img = document.createElement("img");
-    img.src = src;
+    img.src = item.url;
     img.alt = `画像${index + 1}`;
     img.onerror = () => { card.style.opacity = "0.4"; };
 
     const delBtn = document.createElement("button");
     delBtn.className = "admin-delete-btn";
     delBtn.textContent = "削除";
-    delBtn.addEventListener("click", () => openDeleteDialog(index, src));
+    delBtn.addEventListener("click", () => openDeleteDialog(index, item));
 
     card.appendChild(img);
     card.appendChild(delBtn);
@@ -130,7 +121,6 @@ uploadInput.addEventListener("change", async () => {
     }
   }
 
-  // 結果メッセージ
   if (failCount === 0) {
     uploadStatus.style.color = "#4caf50";
     uploadStatus.textContent = `${successCount} 枚追加しました！`;
@@ -144,7 +134,6 @@ uploadInput.addEventListener("change", async () => {
 
   uploadBtn.disabled = false;
   uploadInput.value = "";
-
   await renderGrid();
 
   setTimeout(() => {
@@ -156,9 +145,10 @@ uploadInput.addEventListener("change", async () => {
 // ================================
 // ■ 削除ダイアログ
 // ================================
-function openDeleteDialog(index, src) {
+function openDeleteDialog(index, item) {
   deleteTargetIndex = index;
-  deletePreview.src = src;
+  deletePreview.src = item.url;
+  deletePreview.dataset.publicId = item.publicId;
   deleteDialog.style.display = "flex";
 }
 
@@ -171,20 +161,34 @@ function closeDeleteDialog() {
 deleteConfirmBtn.addEventListener("click", async () => {
   if (deleteTargetIndex === null) return;
 
-  // CloudinaryのpublicIDを取得して削除はAPI Key必要なので
-  // localStorageから除外して管理
-  const saved = localStorage.getItem(STORAGE_KEY);
-  let excluded = saved ? JSON.parse(saved) : [];
+  const publicId = deletePreview.dataset.publicId;
+  const password = sessionStorage.getItem("adminAuth");
 
-  // 削除対象のURLを除外リストに追加
-  const targetUrl = allImages[deleteTargetIndex];
-  if (!excluded.includes(targetUrl)) {
-    excluded.push("__deleted__" + targetUrl);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(excluded));
+  deleteConfirmBtn.disabled = true;
+  deleteConfirmBtn.textContent = "削除中...";
+
+  try {
+    const res = await fetch("/.netlify/functions/delete-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId, password }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      closeDeleteDialog();
+      await renderGrid();
+    } else {
+      alert("削除に失敗しました: " + (data.message || "不明なエラー"));
+    }
+  } catch (err) {
+    alert("削除中にエラーが発生しました");
+    console.error(err);
   }
 
-  closeDeleteDialog();
-  await renderGrid();
+  deleteConfirmBtn.disabled = false;
+  deleteConfirmBtn.textContent = "削除する";
 });
 
 deleteCancelBtn.addEventListener("click", closeDeleteDialog);

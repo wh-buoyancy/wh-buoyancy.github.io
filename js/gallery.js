@@ -1,7 +1,6 @@
 // ================================
 // ■ 定数
 // ================================
-const STORAGE_KEY      = "galleryImages";
 const CLOUDINARY_CLOUD = "dmihzva14";
 
 // ================================
@@ -17,21 +16,18 @@ const modalNext  = document.getElementById("modalNext");
 let currentIndex = 0;
 
 // ================================
-// ■ Cloudinaryから画像一覧を取得
+// ■ Netlify Function経由で画像一覧を取得
 // ================================
 async function fetchImages() {
-  // ネットワーク接続チェック
   if (!navigator.onLine) {
     return { error: "offline" };
   }
 
   try {
-    const res = await fetch(
-      `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/list/gallery.json`
-    );
+    const res = await fetch("/.netlify/functions/get-images");
 
     if (!res.ok) {
-      return { error: res.status === 404 ? "empty" : "server" };
+      return { error: res.status >= 500 ? "server" : "network" };
     }
 
     let data;
@@ -41,23 +37,11 @@ async function fetchImages() {
       return { error: "parse" };
     }
 
-    // localStorageの削除リストを取得
-    let excluded = [];
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const list = JSON.parse(saved);
-        excluded = list
-          .filter(s => s.startsWith("__deleted__"))
-          .map(s => s.replace("__deleted__", ""));
-      }
-    } catch {}
+    if (data.error) {
+      return { error: "server" };
+    }
 
-    const images = data.resources
-      .map(r => `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${r.public_id}`)
-      .filter(url => !excluded.includes(url));
-
-    return { images };
+    return { images: data.images || [] };
 
   } catch (err) {
     console.error("画像一覧の取得に失敗:", err);
@@ -107,23 +91,22 @@ async function renderGallery() {
   const result = await fetchImages();
   gallery.innerHTML = "";
 
-  // エラー処理
   if (result.error) {
     showMessage(result.error);
     return;
   }
 
-  // 0件
   if (result.images.length === 0) {
     showMessage("empty");
     return;
   }
 
-  result.images.forEach((src) => {
+  result.images.forEach((item) => {
     const img = document.createElement("img");
-    img.src = src;
+    img.src = item.url;
     img.alt = "";
     img.className = "thumb";
+    img.dataset.publicId = item.publicId;
     img.onerror = () => { img.style.display = "none"; };
     gallery.appendChild(img);
   });
