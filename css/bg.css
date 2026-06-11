@@ -46,52 +46,6 @@
     50%      { opacity:1;   transform:scale(1.3) rotate(var(--rot,15deg)); }
   }
 
-  /* ===== オーロラ ===== */
-.aurora {
-  position: absolute;
-  top: 0; 
-  right: 0;
-  width: 65%; 
-  height: 55%;
-  
-  /* ↓ 追加：光をモヤっとぼかして発光させる */
-  filter: blur(25px); 
-  /* ↓ 追加：背景（夜空や星）と綺麗に色を混ぜる */
-  mix-blend-mode: screen; 
-  /* ↓ 雲と同じく both を追加 */
-  animation: auroraShimmer 12s ease-in-out infinite both;
-  will-change: opacity, transform;
-}
-
-.aurora-2 { 
-  /* 2つ目の層はタイミングをずらして複雑な動きにする */
-  animation-duration: 15s;
-  animation-delay: -5s; /* 初めから動きをずらすためにマイナス指定 */
-}
-
-/* オーロラの波打つアニメーション */
-@keyframes auroraShimmer {
-  0% { 
-    opacity: 0.65; 
-    /* 少し縮んで、右下にずれる */
-    transform: scale(0.95) translateY(10px) skewX(0deg); 
-  }
-  30% { 
-    opacity: 0.75; 
-  }
-  50% { 
-    opacity: 0.85; 
-    /* 少し膨らんで、左上に引っ張られる（波打つ動き） */
-    transform: scale(1.05) translateY(-10px) skewX(-5deg); 
-  }
-  70% { 
-    opacity: 0.75; 
-  }
-  100% { 
-    opacity: 0.65; 
-    transform: scale(0.95) translateY(10px) skewX(0deg); 
-  }
-}
 
   /* ===== レンズフレア ===== */
   .flare {

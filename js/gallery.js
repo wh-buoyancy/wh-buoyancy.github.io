@@ -103,10 +103,12 @@ async function renderGallery() {
 
   result.images.forEach((item) => {
     const img = document.createElement("img");
-    img.src = item.url;
+    img.src = item.thumb;
     img.alt = "";
     img.className = "thumb";
     img.dataset.publicId = item.publicId;
+    img.dataset.fullUrl = item.full;
+    img.loading = "lazy";
     img.onerror = () => { img.style.display = "none"; };
     gallery.appendChild(img);
   });
@@ -125,7 +127,7 @@ function setupObserver() {
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.05, rootMargin: "50px" });
 
   getThumbs().forEach(img => observer.observe(img));
 }
@@ -138,7 +140,7 @@ function openModal(index) {
   if (!thumbs[index]) return;
 
   currentIndex = index;
-  modalImg.src = thumbs[index].src;
+  modalImg.src = thumbs[index].dataset.fullUrl || thumbs[index].src;
   modal.style.display = "flex";
 
   modalPrev.style.visibility = index > 0 ? "visible" : "hidden";
