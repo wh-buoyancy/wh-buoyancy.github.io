@@ -34,7 +34,8 @@ exports.handler = async (event) => {
     const images = (result.resources || [])
       .filter(r => r.tags && r.tags.includes("gallery"))
       .map(r => ({
-        url: `https://res.cloudinary.com/${cloudName}/image/upload/w_800,q_80/${r.public_id}`,
+        thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_800,q_80/${r.public_id}`,
+        full:  `https://res.cloudinary.com/${cloudName}/image/upload/q_90/${r.public_id}`,
         publicId: r.public_id,
       }));
 

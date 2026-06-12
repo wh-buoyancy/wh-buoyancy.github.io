@@ -478,19 +478,3 @@
     opacity: 0;
   }
 }
-
-/* =========================================================
-   モーション削減設定（OS設定または低スペック環境）
-========================================================= */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-  
-  #bg {
-    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0f0f1a 100%) !important;
-  }
-}
