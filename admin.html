@@ -22,8 +22,12 @@
 
   <div id="bg"></div>
   <script>
+    // bg.html 読み込み【即座】
     fetch("./bg.html")
-      .then(res => res.text())
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to load bg.html: ${res.status}`);
+        return res.text();
+      })
       .then(html => {
         const bg = document.getElementById("bg");
         bg.style.opacity = "0";
@@ -32,6 +36,9 @@
           bg.style.transition = "opacity 0.4s ease";
           bg.style.opacity = "1";
         });
+      })
+      .catch(err => {
+        console.warn("Background load failed:", err);
       });
   </script>
 
