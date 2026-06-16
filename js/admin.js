@@ -2,8 +2,11 @@
 // ■ 管理者ページ
 // ================================
 
-const CLOUDINARY_CLOUD_NAME    = "dmihzva14";
-const CLOUDINARY_UPLOAD_PRESET = "my_gallery";
+const CLOUDINARY_CLOUD_NAME = "dmihzva14";
+const PRESETS = {
+  gallery: "my_gallery",
+  fanart:  "my_fanart",
+};
 
 // ================================
 // ■ 認証チェック
@@ -15,26 +18,60 @@ if (!sessionStorage.getItem("adminAuth")) {
 // ================================
 // ■ 要素取得
 // ================================
-const grid             = document.getElementById("admin-grid");
-const imgCount         = document.getElementById("img-count");
-const logoutBtn        = document.getElementById("logout-btn");
-const uploadInput      = document.getElementById("upload-input");
-const uploadBtn        = document.getElementById("upload-btn");
-const uploadStatus     = document.getElementById("upload-status");
-const deleteDialog     = document.getElementById("delete-dialog");
-const deletePreview    = document.getElementById("delete-preview");
-const deleteCancelBtn  = document.getElementById("delete-cancel");
-const deleteConfirmBtn = document.getElementById("delete-confirm");
+const grid            = document.getElementById("admin-grid");
+const imgCount        = document.getElementById("img-count");
+const sectionTitle    = document.getElementById("admin-section-title");
+const logoutBtn       = document.getElementById("logout-btn");
+const uploadInput     = document.getElementById("upload-input");
+const uploadBtn       = document.getElementById("upload-btn");
+const uploadStatus    = document.getElementById("upload-status");
+const deleteDialog    = document.getElementById("delete-dialog");
+const deletePreview   = document.getElementById("delete-preview");
+const deleteCancelBtn = document.getElementById("delete-cancel");
+const deleteConfirmBtn= document.getElementById("delete-confirm");
+const artistDialog    = document.getElementById("artist-dialog");
+const artistPreview   = document.getElementById("artist-preview");
+const artistInput     = document.getElementById("artist-input");
+const artistCancelBtn = document.getElementById("artist-cancel");
+const artistSaveBtn   = document.getElementById("artist-save");
+const tabs            = document.querySelectorAll(".admin-tab");
 
 let allImages = [];
 let deleteTargetIndex = null;
+let artistTargetPublicId = null;
+let currentTab = "gallery";
+
+// アーティスト名をlocalStorageで管理
+function getArtistName(publicId) {
+  return localStorage.getItem(`artist:${publicId}`) || "";
+}
+
+function saveArtistName(publicId, name) {
+  localStorage.setItem(`artist:${publicId}`, name);
+}
+
+// ================================
+// ■ タブ切り替え
+// ================================
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentTab = tab.dataset.tab;
+
+    const titles = { gallery: "Gallery 画像一覧", fanart: "Fan Art 画像一覧" };
+    sectionTitle.textContent = titles[currentTab];
+
+    renderGrid();
+  });
+});
 
 // ================================
 // ■ 画像一覧をNetlify Function経由で取得
 // ================================
 async function fetchImages() {
   try {
-    const res = await fetch("/.netlify/functions/get-images");
+    const res = await fetch(`/.netlify/functions/get-images?tag=${currentTab}`);
     if (!res.ok) throw new Error("取得失敗");
     const data = await res.json();
     return data.images || [];
@@ -63,17 +100,31 @@ async function renderGrid() {
     card.className = "admin-card";
 
     const img = document.createElement("img");
-    img.src = item.thumb;  // ← urlからthumbに修正
+    img.src = item.thumb;
     img.alt = `画像${index + 1}`;
     img.onerror = () => { card.style.opacity = "0.4"; };
+
+    const btnArea = document.createElement("div");
+    btnArea.className = "admin-card-btns";
+
+    // FanArtタブのときだけアーティスト名ボタンを表示
+    if (currentTab === "fanart") {
+      const artistName = getArtistName(item.publicId);
+      const artistBtn = document.createElement("button");
+      artistBtn.className = "admin-artist-btn";
+      artistBtn.textContent = artistName ? `✏️ ${artistName}` : "✏️ アーティスト名";
+      artistBtn.addEventListener("click", () => openArtistDialog(item));
+      btnArea.appendChild(artistBtn);
+    }
 
     const delBtn = document.createElement("button");
     delBtn.className = "admin-delete-btn";
     delBtn.textContent = "削除";
     delBtn.addEventListener("click", () => openDeleteDialog(index, item));
+    btnArea.appendChild(delBtn);
 
     card.appendChild(img);
-    card.appendChild(delBtn);
+    card.appendChild(btnArea);
     grid.appendChild(card);
   });
 }
@@ -87,6 +138,9 @@ uploadInput.addEventListener("change", async () => {
   const files = Array.from(uploadInput.files);
   if (files.length === 0) return;
 
+  const preset = PRESETS[currentTab];
+  const tag    = currentTab;
+
   uploadBtn.disabled = true;
   uploadStatus.style.color = "rgba(255,255,255,0.7)";
   uploadStatus.textContent = `0 / ${files.length} 枚アップロード中...`;
@@ -98,8 +152,8 @@ uploadInput.addEventListener("change", async () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-      formData.append("tags", "gallery");
+      formData.append("upload_preset", preset);
+      formData.append("tags", tag);
 
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -147,7 +201,7 @@ uploadInput.addEventListener("change", async () => {
 // ================================
 function openDeleteDialog(index, item) {
   deleteTargetIndex = index;
-  deletePreview.src = item.thumb;  // ← urlからthumbに修正
+  deletePreview.src = item.thumb;
   deletePreview.dataset.publicId = item.publicId;
   deleteDialog.style.display = "flex";
 }
@@ -177,6 +231,8 @@ deleteConfirmBtn.addEventListener("click", async () => {
     const data = await res.json();
 
     if (data.success) {
+      // アーティスト名も削除
+      localStorage.removeItem(`artist:${publicId}`);
       closeDeleteDialog();
       await renderGrid();
     } else {
@@ -192,6 +248,37 @@ deleteConfirmBtn.addEventListener("click", async () => {
 });
 
 deleteCancelBtn.addEventListener("click", closeDeleteDialog);
+
+// ================================
+// ■ アーティスト名ダイアログ
+// ================================
+function openArtistDialog(item) {
+  artistTargetPublicId = item.publicId;
+  artistPreview.src = item.thumb;
+  artistInput.value = getArtistName(item.publicId);
+  artistDialog.style.display = "flex";
+  setTimeout(() => artistInput.focus(), 100);
+}
+
+function closeArtistDialog() {
+  artistDialog.style.display = "none";
+  artistTargetPublicId = null;
+  artistPreview.src = "";
+}
+
+artistSaveBtn.addEventListener("click", () => {
+  if (!artistTargetPublicId) return;
+  saveArtistName(artistTargetPublicId, artistInput.value.trim());
+  closeArtistDialog();
+  renderGrid();
+});
+
+artistCancelBtn.addEventListener("click", closeArtistDialog);
+
+artistInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter")  artistSaveBtn.click();
+  if (e.key === "Escape") closeArtistDialog();
+});
 
 // ================================
 // ■ ログアウト
