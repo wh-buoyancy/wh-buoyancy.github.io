@@ -9,7 +9,6 @@ exports.handler = async (event) => {
   const apiKey    = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-  // タグをクエリパラメータで受け取る（デフォルトはgallery）
   const tag = event.queryStringParameters?.tag || "gallery";
 
   const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
@@ -33,14 +32,19 @@ exports.handler = async (event) => {
       req.end();
     });
 
-    // 指定タグがついた画像のみ返す
     const images = (result.resources || [])
       .filter(r => r.tags && r.tags.includes(tag))
-      .map(r => ({
-        thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_300,q_60,f_auto/${r.public_id}`,
-        full: `https://res.cloudinary.com/${cloudName}/image/upload/w_1200,q_80,f_auto/${r.public_id}`,
-        publicId: r.public_id,
-      }));
+      .map(r => {
+        const urls = tag === "fanart"
+          ? {
+              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_800,q_80,f_auto/${r.public_id}`,
+            }
+          : {
+              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_300,q_60,f_auto/${r.public_id}`,
+              full:  `https://res.cloudinary.com/${cloudName}/image/upload/w_1200,q_80,f_auto/${r.public_id}`,
+            };
+        return { ...urls, publicId: r.public_id };
+      });
 
     return {
       statusCode: 200,
