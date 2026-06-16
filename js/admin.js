@@ -37,17 +37,45 @@ const artistSaveBtn   = document.getElementById("artist-save");
 const tabs            = document.querySelectorAll(".admin-tab");
 
 let allImages = [];
+let artists = {};
 let deleteTargetIndex = null;
 let artistTargetPublicId = null;
 let currentTab = "gallery";
 
-// アーティスト名をlocalStorageで管理
-function getArtistName(publicId) {
-  return localStorage.getItem(`artist:${publicId}`) || "";
+// ================================
+// ■ アーティスト名をサーバーから取得
+// ================================
+async function fetchArtists() {
+  try {
+    const res = await fetch("/.netlify/functions/get-artists");
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data.artists || {};
+  } catch {
+    return {};
+  }
 }
 
-function saveArtistName(publicId, name) {
-  localStorage.setItem(`artist:${publicId}`, name);
+// ================================
+// ■ アーティスト名をサーバーに保存
+// ================================
+async function saveArtistName(publicId, name) {
+  const password = sessionStorage.getItem("adminAuth");
+  try {
+    const res = await fetch("/.netlify/functions/save-artist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId, artistName: name, password }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      artists[publicId] = name;
+    } else {
+      alert("保存に失敗しました");
+    }
+  } catch {
+    alert("保存中にエラーが発生しました");
+  }
 }
 
 // ================================
@@ -107,9 +135,8 @@ async function renderGrid() {
     const btnArea = document.createElement("div");
     btnArea.className = "admin-card-btns";
 
-    // FanArtタブのときだけアーティスト名ボタンを表示
     if (currentTab === "fanart") {
-      const artistName = getArtistName(item.publicId);
+      const artistName = artists[item.publicId] || "";
       const artistBtn = document.createElement("button");
       artistBtn.className = "admin-artist-btn";
       artistBtn.textContent = artistName ? `✏️ ${artistName}` : "✏️ アーティスト名";
@@ -232,7 +259,8 @@ deleteConfirmBtn.addEventListener("click", async () => {
 
     if (data.success) {
       // アーティスト名も削除
-      localStorage.removeItem(`artist:${publicId}`);
+      await saveArtistName(publicId, "");
+      delete artists[publicId];
       closeDeleteDialog();
       await renderGrid();
     } else {
@@ -255,7 +283,7 @@ deleteCancelBtn.addEventListener("click", closeDeleteDialog);
 function openArtistDialog(item) {
   artistTargetPublicId = item.publicId;
   artistPreview.src = item.thumb;
-  artistInput.value = getArtistName(item.publicId);
+  artistInput.value = artists[item.publicId] || "";
   artistDialog.style.display = "flex";
   setTimeout(() => artistInput.focus(), 100);
 }
@@ -266,9 +294,15 @@ function closeArtistDialog() {
   artistPreview.src = "";
 }
 
-artistSaveBtn.addEventListener("click", () => {
+artistSaveBtn.addEventListener("click", async () => {
   if (!artistTargetPublicId) return;
-  saveArtistName(artistTargetPublicId, artistInput.value.trim());
+  artistSaveBtn.disabled = true;
+  artistSaveBtn.textContent = "保存中...";
+
+  await saveArtistName(artistTargetPublicId, artistInput.value.trim());
+
+  artistSaveBtn.disabled = false;
+  artistSaveBtn.textContent = "保存";
   closeArtistDialog();
   renderGrid();
 });
@@ -291,4 +325,7 @@ logoutBtn.addEventListener("click", () => {
 // ================================
 // ■ 初期描画
 // ================================
-renderGrid();
+(async () => {
+  artists = await fetchArtists();
+  renderGrid();
+})();
