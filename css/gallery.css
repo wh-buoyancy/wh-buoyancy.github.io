@@ -21,6 +21,7 @@
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.2s;
+  border-radius: 12px; 
 }
 
 /* フェードイン初期状態（ギャラリー内のみ） */

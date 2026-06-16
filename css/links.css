@@ -19,6 +19,7 @@ body {
 /* ===== 各リンクボタン ===== */
 .link-btn {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   text-decoration: none;
