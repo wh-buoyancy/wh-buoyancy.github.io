@@ -5,12 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>character</title>
-  <!-- Google Fonts （display=swap で即座にテキスト表示） -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/home.css">
@@ -26,7 +23,6 @@
   <div id="bg"></div>
 
   <script>
-    // bg.html 読み込み【即座】
     fetch("./bg.html")
       .then(res => {
         if (!res.ok) throw new Error(`Failed to load bg.html: ${res.status}`);
@@ -41,125 +37,42 @@
           bg.style.opacity = "1";
         });
       })
-      .catch(err => {
-        console.warn("Background load failed:", err);
-      });
+      .catch(err => console.warn("Background load failed:", err));
   </script>
 
   <header class="topbar">
-
     <div class="topbar-left">
       <img src="logo.png" alt="logo" class="logo-img">
       <a href="index.html" class="logo">WebProfile</a>
     </div>
-
     <nav class="topbar-right">
       <a href="index.html">Home</a>
       <a href="character.html" class="active">Character</a>
       <a href="gallery.html">Gallery</a>
       <a href="links.html">Links</a>
     </nav>
-
   </header>
-
-
 
   <!-- キャラクタープロフィール -->
   <section class="about-profile">
-
     <img src="https://picsum.photos/300" class="about-icon" alt="character">
-
     <div class="about-text">
-      <h2>Test </h2>
+      <h2>Test</h2>
       <p>説明がここに入る</p>
     </div>
-
   </section>
 
   <!-- ファンアートセクション -->
   <section class="fanart-section">
-
     <h2>Art</h2>
-
-    <div class="fan-grid">
-
-      <!-- 1枚目 -->
-      <div class="flip-card">
-        <div class="flip-inner">
-          <div class="flip-front">
-            <img class="thumb" src="https://picsum.photos/600/300">
-          </div>
-          <div class="flip-back">
-            <p>@artist_01</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2枚目 -->
-      <div class="flip-card">
-        <div class="flip-inner">
-          <div class="flip-front">
-            <img class="thumb" src="https://picsum.photos/500/500">
-          </div>
-          <div class="flip-back">
-            <p>@artist_02</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3枚目 -->
-      <div class="flip-card">
-        <div class="flip-inner">
-          <div class="flip-front">
-            <img class="thumb" src="https://picsum.photos/300/600">
-          </div>
-          <div class="flip-back">
-            <p>@artist_03
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4枚目 -->
-      <div class="flip-card">
-        <div class="flip-inner">
-          <div class="flip-front">
-            <img class="thumb" src="https://picsum.photos/800/500">
-          </div>
-          <div class="flip-back">
-            <p>@artist_04</p>
-          </div>
-        </div>
-      </div>
-
+    <div class="fan-grid" id="fan-grid">
+      <p style="color:rgba(255,255,255,0.5)">読み込み中...</p>
     </div>
-
   </section>
-
-  <script>
-    const cards = document.querySelectorAll('.flip-card');
-
-    // カードクリックでトグル
-    cards.forEach(card => {
-      card.addEventListener('click', (e) => {
-        card.classList.toggle('is-flipped');
-
-        // カードクリックが外に伝わらないようにする
-        e.stopPropagation();
-      });
-    });
-
-    // 画像（カード）外をクリックしたら全部戻す
-    document.addEventListener('click', () => {
-      cards.forEach(card => {
-        card.classList.remove('is-flipped');
-      });
-    });
-  </script>
 
   <div id="cursor-glow"></div>
   <script src="js/bg.js"></script>
+  <script src="js/character.js"></script>
 
 </body>
-
 </html>
