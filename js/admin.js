@@ -63,7 +63,7 @@ async function renderGrid() {
     card.className = "admin-card";
 
     const img = document.createElement("img");
-    img.src = item.url;
+    img.src = item.thumb;  // ← urlからthumbに修正
     img.alt = `画像${index + 1}`;
     img.onerror = () => { card.style.opacity = "0.4"; };
 
@@ -147,7 +147,7 @@ uploadInput.addEventListener("change", async () => {
 // ================================
 function openDeleteDialog(index, item) {
   deleteTargetIndex = index;
-  deletePreview.src = item.url;
+  deletePreview.src = item.thumb;  // ← urlからthumbに修正
   deletePreview.dataset.publicId = item.publicId;
   deleteDialog.style.display = "flex";
 }
