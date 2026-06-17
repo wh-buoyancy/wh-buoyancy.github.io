@@ -21,15 +21,13 @@ exports.handler = async (event) => {
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
     const timestamp = Math.floor(Date.now() / 1000);
 
-    // 署名生成
-    const signature = crypto
-      .createHash("sha1")
-      .update(`command=add&context=artist=${artistName}&timestamp=${timestamp}${apiSecret}`)
-      .digest("hex");
+    // エラーメッセージから確認した正しい署名文字列
+    const signStr = `command=add&context=artist=${artistName}&timestamp=${timestamp}${apiSecret}`;
+    const signature = crypto.createHash("sha1").update(signStr).digest("hex");
 
     const params = new URLSearchParams({
       command:    "add",
-      public_id:  publicId,
+      public_ids: publicId,  // ← public_idではなくpublic_ids
       context:    `artist=${artistName}`,
       timestamp:  timestamp.toString(),
       api_key:    apiKey,
