@@ -40,7 +40,7 @@ exports.handler = async (event) => {
               thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_70,f_auto/${r.public_id}`,
             }
           : {
-              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_60,f_auto/${r.public_id}`,
+              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_70,f_auto/${r.public_id}`,
               full:  `https://res.cloudinary.com/${cloudName}/image/upload/w_1200,q_80,f_auto/${r.public_id}`,
             };
         return { ...urls, publicId: r.public_id, artistName };
