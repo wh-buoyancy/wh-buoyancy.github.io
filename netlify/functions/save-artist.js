@@ -28,6 +28,7 @@ exports.handler = async (event) => {
       .digest("hex");
 
     const params = new URLSearchParams({
+      command:    "add",
       public_id:  publicId,
       context:    `artist=${artistName}`,
       timestamp:  timestamp.toString(),
