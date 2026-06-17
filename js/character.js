@@ -1,31 +1,10 @@
-// ================================
-// ■ アーティスト名をサーバーから取得
-// ================================
-async function fetchArtists() {
-  try {
-    const res = await fetch("/.netlify/functions/get-artists");
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data.artists || {};
-  } catch {
-    return {};
-  }
-}
-
-// ================================
-// ■ fanartタグの画像を取得して描画
-// ================================
 async function renderFanArt() {
   const grid = document.getElementById("fan-grid");
 
   try {
-    const [imagesRes, artists] = await Promise.all([
-      fetch("/.netlify/functions/get-images?tag=fanart"),
-      fetchArtists(),
-    ]);
-
-    if (!imagesRes.ok) throw new Error("取得失敗");
-    const data = await imagesRes.json();
+    const res = await fetch("/.netlify/functions/get-images?tag=fanart");
+    if (!res.ok) throw new Error("取得失敗");
+    const data = await res.json();
     const images = data.images || [];
 
     grid.innerHTML = "";
@@ -36,8 +15,6 @@ async function renderFanArt() {
     }
 
     images.forEach(item => {
-      const artistName = artists[item.publicId] || "";
-
       const card = document.createElement("div");
       card.className = "flip-card";
 
@@ -47,7 +24,7 @@ async function renderFanArt() {
             <img class="thumb" src="${item.thumb}" alt="">
           </div>
           <div class="flip-back">
-            <p>${artistName || "unknown"}</p>
+            <p>${item.artistName || "unknown"}</p>
           </div>
         </div>
       `;

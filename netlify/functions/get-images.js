@@ -8,17 +8,15 @@ exports.handler = async (event) => {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey    = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  const tag = event.queryStringParameters?.tag || "gallery";
-
-  const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
+  const tag       = event.queryStringParameters?.tag || "gallery";
+  const auth      = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
 
   try {
     const result = await new Promise((resolve, reject) => {
       const req = https.request(
         {
           hostname: "api.cloudinary.com",
-          path: `/v1_1/${cloudName}/resources/image?tags=true&max_results=100`,
+          path: `/v1_1/${cloudName}/resources/image?tags=true&context=true&max_results=100`,
           method: "GET",
           headers: { Authorization: `Basic ${auth}` },
         },
@@ -35,6 +33,7 @@ exports.handler = async (event) => {
     const images = (result.resources || [])
       .filter(r => r.tags && r.tags.includes(tag))
       .map(r => {
+        const artistName = r.context?.custom?.artist || "";
         const urls = tag === "fanart"
           ? {
               thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_70,f_auto/${r.public_id}`,
@@ -43,7 +42,7 @@ exports.handler = async (event) => {
               thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_200,q_60,f_auto/${r.public_id}`,
               full:  `https://res.cloudinary.com/${cloudName}/image/upload/w_1200,q_80,f_auto/${r.public_id}`,
             };
-        return { ...urls, publicId: r.public_id };
+        return { ...urls, publicId: r.public_id, artistName };
       });
 
     return {

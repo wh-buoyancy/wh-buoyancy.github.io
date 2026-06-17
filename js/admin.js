@@ -1,23 +1,13 @@
-// ================================
-// ■ 管理者ページ
-// ================================
-
 const CLOUDINARY_CLOUD_NAME = "dmihzva14";
 const PRESETS = {
   gallery: "my_gallery",
   fanart:  "my_fanart",
 };
 
-// ================================
-// ■ 認証チェック
-// ================================
 if (!sessionStorage.getItem("adminAuth")) {
   window.location.href = "gallery.html";
 }
 
-// ================================
-// ■ 要素取得
-// ================================
 const grid            = document.getElementById("admin-grid");
 const imgCount        = document.getElementById("img-count");
 const sectionTitle    = document.getElementById("admin-section-title");
@@ -37,46 +27,9 @@ const artistSaveBtn   = document.getElementById("artist-save");
 const tabs            = document.querySelectorAll(".admin-tab");
 
 let allImages = [];
-let artists = {};
 let deleteTargetIndex = null;
-let artistTargetPublicId = null;
+let artistTargetItem = null;
 let currentTab = "gallery";
-
-// ================================
-// ■ アーティスト名をサーバーから取得
-// ================================
-async function fetchArtists() {
-  try {
-    const res = await fetch("/.netlify/functions/get-artists");
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data.artists || {};
-  } catch {
-    return {};
-  }
-}
-
-// ================================
-// ■ アーティスト名をサーバーに保存
-// ================================
-async function saveArtistName(publicId, name) {
-  const password = sessionStorage.getItem("adminAuth");
-  try {
-    const res = await fetch("/.netlify/functions/save-artist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publicId, artistName: name, password }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      artists[publicId] = name;
-    } else {
-      alert("保存に失敗しました");
-    }
-  } catch {
-    alert("保存中にエラーが発生しました");
-  }
-}
 
 // ================================
 // ■ タブ切り替え
@@ -86,16 +39,14 @@ tabs.forEach(tab => {
     tabs.forEach(t => t.classList.remove("active"));
     tab.classList.add("active");
     currentTab = tab.dataset.tab;
-
     const titles = { gallery: "Gallery 画像一覧", fanart: "Fan Art 画像一覧" };
     sectionTitle.textContent = titles[currentTab];
-
     renderGrid();
   });
 });
 
 // ================================
-// ■ 画像一覧をNetlify Function経由で取得
+// ■ 画像一覧取得
 // ================================
 async function fetchImages() {
   try {
@@ -136,10 +87,9 @@ async function renderGrid() {
     btnArea.className = "admin-card-btns";
 
     if (currentTab === "fanart") {
-      const artistName = artists[item.publicId] || "";
       const artistBtn = document.createElement("button");
       artistBtn.className = "admin-artist-btn";
-      artistBtn.textContent = artistName ? `✏️ ${artistName}` : "✏️ アーティスト名";
+      artistBtn.textContent = item.artistName ? `✏️ ${item.artistName}` : "✏️ アーティスト名";
       artistBtn.addEventListener("click", () => openArtistDialog(item));
       btnArea.appendChild(artistBtn);
     }
@@ -157,7 +107,7 @@ async function renderGrid() {
 }
 
 // ================================
-// ■ 画像アップロード（Cloudinary）
+// ■ アップロード
 // ================================
 uploadBtn.addEventListener("click", () => uploadInput.click());
 
@@ -189,7 +139,6 @@ uploadInput.addEventListener("change", async () => {
 
       if (!res.ok) throw new Error("アップロード失敗");
       const data = await res.json();
-
       if (data.secure_url) {
         successCount++;
         uploadStatus.textContent = `${successCount} / ${files.length} 枚完了...`;
@@ -256,11 +205,7 @@ deleteConfirmBtn.addEventListener("click", async () => {
     });
 
     const data = await res.json();
-
     if (data.success) {
-      // アーティスト名も削除
-      await saveArtistName(publicId, "");
-      delete artists[publicId];
       closeDeleteDialog();
       await renderGrid();
     } else {
@@ -281,30 +226,49 @@ deleteCancelBtn.addEventListener("click", closeDeleteDialog);
 // ■ アーティスト名ダイアログ
 // ================================
 function openArtistDialog(item) {
-  artistTargetPublicId = item.publicId;
+  artistTargetItem = item;
   artistPreview.src = item.thumb;
-  artistInput.value = artists[item.publicId] || "";
+  artistInput.value = item.artistName || "";
   artistDialog.style.display = "flex";
   setTimeout(() => artistInput.focus(), 100);
 }
 
 function closeArtistDialog() {
   artistDialog.style.display = "none";
-  artistTargetPublicId = null;
+  artistTargetItem = null;
   artistPreview.src = "";
 }
 
 artistSaveBtn.addEventListener("click", async () => {
-  if (!artistTargetPublicId) return;
+  if (!artistTargetItem) return;
+
   artistSaveBtn.disabled = true;
   artistSaveBtn.textContent = "保存中...";
 
-  await saveArtistName(artistTargetPublicId, artistInput.value.trim());
+  try {
+    const res = await fetch("/.netlify/functions/save-artist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        publicId:   artistTargetItem.publicId,
+        artistName: artistInput.value.trim(),
+        password:   sessionStorage.getItem("adminAuth"),
+      }),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      closeArtistDialog();
+      await renderGrid();
+    } else {
+      alert("保存に失敗しました: " + (data.message || "不明なエラー"));
+    }
+  } catch {
+    alert("保存中にエラーが発生しました");
+  }
 
   artistSaveBtn.disabled = false;
   artistSaveBtn.textContent = "保存";
-  closeArtistDialog();
-  renderGrid();
 });
 
 artistCancelBtn.addEventListener("click", closeArtistDialog);
@@ -325,7 +289,4 @@ logoutBtn.addEventListener("click", () => {
 // ================================
 // ■ 初期描画
 // ================================
-(async () => {
-  artists = await fetchArtists();
-  renderGrid();
-})();
+renderGrid();
