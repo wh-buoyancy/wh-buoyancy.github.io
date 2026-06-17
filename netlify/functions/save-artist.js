@@ -21,10 +21,10 @@ exports.handler = async (event) => {
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
     const timestamp = Math.floor(Date.now() / 1000);
 
-    // 署名生成
+    // 署名生成（パラメータをアルファベット順に並べる）
     const signature = crypto
       .createHash("sha1")
-      .update(`context=artist=${artistName}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`)
+      .update(`command=add&context=artist=${artistName}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`)
       .digest("hex");
 
     const params = new URLSearchParams({
