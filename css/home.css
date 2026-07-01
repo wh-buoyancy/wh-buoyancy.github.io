@@ -6,15 +6,15 @@
    ■ プロフィールカード全体
 ========================================================= */
 .profile {
-  /* ファンタジーガラス背景 */
+  /* 既存のスタイルはそのまま */
   background: var(--card);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   border: var(--border-gold);
   border-radius: 18px;
-  overflow: visible;        /* ← avatarがはみ出せるようにvisibleに */
-  margin: 16px;
+  overflow: visible;
+  margin: 16px auto; /* ← centerにするためautoに変更 */
+  max-width: 680px;  /* ← これを追加 */
   box-shadow: var(--shadow-gold), var(--shadow);
   position: relative;
 }
@@ -162,7 +162,7 @@
 @media (max-width: 768px) {
 
   .profile {
-    margin: 8px;
+   margin: 8px auto;
     box-shadow: none;
   }
   .profile-header img {

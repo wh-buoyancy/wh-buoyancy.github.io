@@ -1,7 +1,8 @@
 const CLOUDINARY_CLOUD_NAME = "dmihzva14";
 const PRESETS = {
   gallery: "my_gallery",
-  fanart:  "my_fanart",
+  fanart_1: "my_fanart",
+  fanart_2: "my_fanart_2",
 };
 
 if (!sessionStorage.getItem("adminAuth")) {
@@ -39,7 +40,7 @@ tabs.forEach(tab => {
     tabs.forEach(t => t.classList.remove("active"));
     tab.classList.add("active");
     currentTab = tab.dataset.tab;
-    const titles = { gallery: "Gallery 画像一覧", fanart: "Fan Art 画像一覧" };
+    const titles = { gallery: "Gallery 画像一覧", fanart_1: "Fan Art 1 画像一覧", fanart_2: "Fan Art 2 画像一覧" };
     sectionTitle.textContent = titles[currentTab];
     renderGrid();
   });
@@ -86,7 +87,7 @@ async function renderGrid() {
     const btnArea = document.createElement("div");
     btnArea.className = "admin-card-btns";
 
-    if (currentTab === "fanart") {
+    if (currentTab.startsWith("fanart")) {
       const artistBtn = document.createElement("button");
       artistBtn.className = "admin-artist-btn";
       artistBtn.textContent = item.artistName ? `✏️ ${item.artistName}` : "✏️ アーティスト名";

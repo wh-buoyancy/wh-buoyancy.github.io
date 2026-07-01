@@ -21,14 +21,14 @@ exports.handler = async (event) => {
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
     const timestamp = Math.floor(Date.now() / 1000);
 
-    // エラーメッセージから確認した正しい署名文字列
-    const signStr = `command=add&context=artist=${artistName}&timestamp=${timestamp}${apiSecret}`;
+    // パラメータをアルファベット順に並べて署名（command, context, public_ids, timestamp）
+    const signStr = `command=add&context=artist=${artistName}&public_ids=${publicId}&timestamp=${timestamp}${apiSecret}`;
     const signature = crypto.createHash("sha1").update(signStr).digest("hex");
 
     const params = new URLSearchParams({
       command:    "add",
-      public_ids: publicId,  // ← public_idではなくpublic_ids
       context:    `artist=${artistName}`,
+      public_ids: publicId,
       timestamp:  timestamp.toString(),
       api_key:    apiKey,
       signature,
@@ -56,7 +56,7 @@ exports.handler = async (event) => {
     if (result.public_ids) {
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true }),
+        body: JSON.stringify({ success: true, result }),
       };
     } else {
       return {

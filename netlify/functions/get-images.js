@@ -30,17 +30,18 @@ exports.handler = async (event) => {
       req.end();
     });
 
+    const isFanart = tag.startsWith("fanart");
+
     const images = (result.resources || [])
       .filter(r => r.tags && r.tags.includes(tag))
       .map(r => {
         const artistName = r.context?.custom?.artist || "";
-        const urls = tag === "fanart"
+        const urls = isFanart
           ? {
-
               thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_70,f_auto/${r.public_id}`,
             }
           : {
-              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_400,q_70,f_auto/${r.public_id}`,
+              thumb: `https://res.cloudinary.com/${cloudName}/image/upload/w_200,q_70,f_auto/${r.public_id}`,
               full:  `https://res.cloudinary.com/${cloudName}/image/upload/w_1200,q_80,f_auto/${r.public_id}`,
             };
         return { ...urls, publicId: r.public_id, artistName };

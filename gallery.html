@@ -25,7 +25,6 @@
      <div id="bg"></div>
 
      <script>
-          // bg.html 読み込み【即座】
           fetch("./bg.html")
                .then(res => {
                     if (!res.ok) throw new Error(`Failed to load bg.html: ${res.status}`);
@@ -40,9 +39,7 @@
                          bg.style.opacity = "1";
                     });
                })
-               .catch(err => {
-                    console.warn("Background load failed:", err);
-               });
+               .catch(err => console.warn("Background load failed:", err));
      </script>
 
      <!-- ヘッダー -->
@@ -59,9 +56,14 @@
           </nav>
      </header>
 
+     <!-- ページタイトル -->
+     <div class="gallery-header">
+          <h1 class="gallery-title">Gallery</h1>
+          <p class="gallery-count"><span id="gallery-count">0</span> works</p>
+     </div>
+
      <!-- メインコンテンツ -->
      <main class="container">
-          <!-- 画像はJSで動的に生成 -->
           <div class="gallery" id="gallery"></div>
      </main>
 
@@ -95,5 +97,4 @@
      <script src="js/bg.js"></script>
 
 </body>
-
 </html>

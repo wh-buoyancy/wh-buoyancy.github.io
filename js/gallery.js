@@ -6,12 +6,13 @@ const CLOUDINARY_CLOUD = "dmihzva14";
 // ================================
 // ■ 要素取得
 // ================================
-const gallery    = document.getElementById("gallery");
-const modal      = document.getElementById("modal");
-const modalImg   = document.getElementById("modalImg");
-const modalClose = document.getElementById("modalClose");
-const modalPrev  = document.getElementById("modalPrev");
-const modalNext  = document.getElementById("modalNext");
+const gallery      = document.getElementById("gallery");
+const modal        = document.getElementById("modal");
+const modalImg     = document.getElementById("modalImg");
+const modalClose   = document.getElementById("modalClose");
+const modalPrev    = document.getElementById("modalPrev");
+const modalNext    = document.getElementById("modalNext");
+const galleryCount = document.getElementById("gallery-count");
 
 let currentIndex = 0;
 
@@ -19,16 +20,11 @@ let currentIndex = 0;
 // ■ Netlify Function経由で画像一覧を取得
 // ================================
 async function fetchImages() {
-  if (!navigator.onLine) {
-    return { error: "offline" };
-  }
+  if (!navigator.onLine) return { error: "offline" };
 
   try {
     const res = await fetch("/.netlify/functions/get-images");
-
-    if (!res.ok) {
-      return { error: res.status >= 500 ? "server" : "network" };
-    }
+    if (!res.ok) return { error: res.status >= 500 ? "server" : "network" };
 
     let data;
     try {
@@ -37,10 +33,7 @@ async function fetchImages() {
       return { error: "parse" };
     }
 
-    if (data.error) {
-      return { error: "server" };
-    }
-
+    if (data.error) return { error: "server" };
     return { images: data.images || [] };
 
   } catch (err) {
@@ -64,7 +57,6 @@ function showMessage(type) {
     parse:   "データの読み込みに失敗しました。",
     empty:   "画像がありません",
   };
-
   const colors = {
     offline: "rgba(255,150,50,0.8)",
     network: "rgba(255,80,80,0.8)",
@@ -72,15 +64,10 @@ function showMessage(type) {
     parse:   "rgba(255,80,80,0.8)",
     empty:   "rgba(255,255,255,0.4)",
   };
-
   gallery.innerHTML = `
-    <p style="
-      color: ${colors[type] || "rgba(255,255,255,0.4)"};
-      text-align: center;
-      grid-column: 1 / -1;
-      padding: 40px 0;
-      font-size: 14px;
-    ">${messages[type] || "エラーが発生しました"}</p>
+    <p style="color:${colors[type]||"rgba(255,255,255,0.4)"};text-align:center;grid-column:1/-1;padding:40px 0;font-size:14px;">
+      ${messages[type]||"エラーが発生しました"}
+    </p>
   `;
 }
 
@@ -93,13 +80,18 @@ async function renderGallery() {
 
   if (result.error) {
     showMessage(result.error);
+    if (galleryCount) galleryCount.textContent = "0";
     return;
   }
 
   if (result.images.length === 0) {
     showMessage("empty");
+    if (galleryCount) galleryCount.textContent = "0";
     return;
   }
+
+  // 枚数を表示
+  if (galleryCount) galleryCount.textContent = result.images.length;
 
   result.images.forEach((item) => {
     const img = document.createElement("img");

@@ -10,8 +10,31 @@
 @media (max-width: 768px) {
   .gallery {
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
   }
+}
+
+/* ================================
+■ ギャラリーヘッダー
+================================ */
+.gallery-header {
+  text-align: center;
+  padding: 24px 16px 0;
+}
+
+.gallery-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(24px, 4vw, 40px);
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(212, 168, 75, 0.4);
+  margin: 0 0 4px;
+}
+
+.gallery-count {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 1px;
+  margin: 0;
 }
 
 /* ===== サムネイル ===== */
@@ -21,7 +44,6 @@
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.2s;
-  border-radius: 12px; 
 }
 
 /* フェードイン初期状態（ギャラリー内のみ） */
@@ -31,7 +53,7 @@
 }
 
 /* フェードイン発動クラス（JSで付与） */
-.thumb.visible {
+.gallery .thumb.visible {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -58,7 +80,6 @@
   max-height: 90vh;
   object-fit: contain;
   animation: pop 0.2s ease;
-  /* ナビボタンの分だけ横に余白 */
   margin: 0 60px;
 }
 
@@ -84,6 +105,7 @@
 .modal-nav {
   position: absolute;
   top: 50%;
+  transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
@@ -108,6 +130,9 @@
 .modal-prev { left: 16px; }
 .modal-next { right: 16px; }
 
+.modal-nav:focus {
+  outline: none;
+}
 
 /* スマホでナビボタンを小さく */
 @media (max-width: 768px) {
@@ -121,11 +146,7 @@
     max-width: 92vw;
     margin: 0 48px;
   }
-
-
 }
-
-
 
 /* ================================
 ■ 隠し管理者トリガー（右下の透明エリア）
@@ -137,11 +158,10 @@
   width: 60px;
   height: 60px;
   z-index: 9998;
-  /* 完全透明・見えない */
   background: transparent;
   cursor: default;
 }
- 
+
 /* ================================
 ■ パスワードダイアログ背景
 ================================ */
@@ -154,8 +174,7 @@
   align-items: center;
   z-index: 99999;
 }
- 
-/* ダイアログボックス */
+
 #admin-dialog-box {
   background: white;
   border-radius: 14px;
@@ -167,13 +186,13 @@
   text-align: center;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
- 
+
 #admin-dialog-box p {
   margin: 0;
   font-size: 15px;
   color: #333;
 }
- 
+
 #admin-password-input {
   width: 100%;
   padding: 10px 12px;
@@ -183,17 +202,17 @@
   box-sizing: border-box;
   outline: none;
 }
- 
+
 #admin-password-input:focus {
   border-color: #888;
 }
- 
+
 #admin-dialog-buttons {
   display: flex;
   gap: 10px;
   justify-content: center;
 }
- 
+
 #admin-cancel,
 #admin-submit {
   flex: 1;
@@ -203,17 +222,17 @@
   font-size: 14px;
   cursor: pointer;
 }
- 
+
 #admin-cancel {
   background: #f0f0f0;
   color: #555;
 }
- 
+
 #admin-submit {
   background: #333;
   color: white;
 }
- 
+
 #admin-error {
   color: #e05;
   font-size: 13px;
